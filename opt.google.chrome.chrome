@@ -1,0 +1,263 @@
+# vim:syntax=apparmor
+# Author: Bozhin Zafirov <bozhin@abv.bg>
+
+#include <tunables/global>
+
+/opt/google/chrome/chrome {
+  #include <abstractions/X>
+  #include <abstractions/base>
+  #include <abstractions/bash>
+  #include <abstractions/fonts>
+  #include <abstractions/audio>
+  #include <abstractions/kde>
+  #include <abstractions/dbus-strict>
+  #include <abstractions/dbus-session>
+  #include <abstractions/dbus-accessibility>
+  #include <abstractions/dconf>
+  #include <abstractions/freedesktop.org>
+  #include <abstractions/nameservice>
+
+        dbus (send)
+                bus=system
+                interface="org.freedesktop.DBus",
+        dbus (send)
+                path="/org/freedesktop/login1"
+                bus=system
+                interface="org.freedesktop.login1.Manager",
+        dbus (send)
+                bus=system
+                interface="org.freedesktop.DBus.Properties",
+
+
+  capability sys_admin,
+  capability sys_chroot,
+  capability sys_ptrace,
+
+  network inet stream,
+  network inet dgram,
+  network inet6 stream,
+  network inet6 dgram,
+  network packet dgram,
+  network netlink,
+
+  # access to binary
+  /opt/google/chrome/chrome rmPx,
+
+  # binutils
+  /usr/bin/readlink Uxr,
+  /usr/bin/mkdir Uxr,
+  /usr/bin/dirname Uxr,
+  /usr/bin/nohup Uxr,
+  /usr/bin/xdg-settings Uxr,
+
+  # audio
+  /etc/asound.conf r,
+  /dev/snd/* m,
+
+  /run/shm/pulse-shm-** m,
+  /run/user/*/dconf/user rwk,
+
+
+  # home files
+  @{HOME}/.config/skypeforlinux/** rwk,
+  @{HOME}/.ICEauthority r,
+  @{HOME}/.Xauthority r,
+  @{HOME}/.cache/dconf/user rw,
+  @{HOME}/.cache/gnome-mplayer/plugin/gecko-mediaplayer* rw,
+  @{HOME}/.cache/google-chrome/ rw,
+  @{HOME}/.cache/google-chrome/** rw,
+  @{HOME}/.cache/google-chrome/Default/Cache/* rw,
+  @{HOME}/.cache/google-chrome/Default/Media*/* rw,
+  @{HOME}/.cache/mesa_shader_cache/** rwk,
+  @{HOME}/.config/dconf/user r,
+  @{HOME}/.config/google-chrome/ rw,
+  @{HOME}/.config/google-chrome/** rwk,
+  @{HOME}/.config/ibus/bus/ w,
+  @{HOME}/.config/gtk-3.0/gtk.css r,
+  @{HOME}/.config/user-dirs.dirs r,
+  @{HOME}/.config/oxygen-gtk/* rw,
+  @{HOME}/.fontconfig/* r,
+  @{HOME}/.gksu.lock r,
+  @{HOME}/.goutputstream-* r,
+  @{HOME}/.gtk-bookmarks r,
+  @{HOME}/.icons/ r,
+  @{HOME}/.icons/default/index.theme r,
+  @{HOME}/.local/share/icons/ r,
+  @{HOME}/.local/share/icons/** r,
+  @{HOME}/.local/share/mime/* r,
+  @{HOME}/.local/share/recently-used.xbel* rw,
+  @{HOME}/.mozilla/firefox/*.default/compatibility.ini r,
+  @{HOME}/.mozilla/firefox/profiles.ini r,
+  @{HOME}/.nv/GLCache/ r,
+  @{HOME}/.nv/GLCache/** rwk,
+  @{HOME}/.pki/nssdb/* r,
+  @{HOME}/.pki/nssdb/*.db rwk,
+  @{HOME}/.pulse-cookie rwk,
+  @{HOME}/.thumbnails/normal/* r,
+  @{HOME}/.xsession-errors r,
+  @{HOME}/.config/ibus/bus/* r,
+  owner @{HOME}/Downloads/ r,
+  owner @{HOME}/Downloads/** rw,
+
+  /opt/google/chrome/** r,
+  /opt/google/chrome/*.so mr,
+  /opt/google/chrome/lib/*.so mr,
+  /opt/google/chrome/PepperFlash/libpepflashplayer.so mr,
+  /opt/google/chrome/chrome-sandbox rPx,
+  /opt/google/chrome/extensions/ rw,
+  /opt/google/chrome/google-chrome rPx,
+  /opt/google/chrome/nacl_helper_bootstrap Px,
+  /opt/google/chrome/nacl_helper rix,
+  /opt/google/chrome/xdg-settings Cx,
+  /opt/google/chrome/WidevineCdm/_platform_specific/linux_x64/* mr,
+
+  # group :@
+  /etc/group r,
+
+
+  # shared libraries
+  /usr/lib/** rm,
+  /usr/share/X11/XErrorDB r,
+  /usr/share/glib-2.0/schemas/gschemas.compiled r,
+  /usr/share/gvfs/remote-volume-monitors/ r,
+  /usr/share/gvfs/remote-volume-monitors/* r,
+  /usr/share/icons/ r,
+  /usr/share/icons/** r,
+  /usr/share/mime/** r,
+  /usr/share/misc/pci.ids r,
+  /usr/share/pixmaps/ r,
+  /usr/share/pyshared/* r,
+  /usr/share/themes/** r,
+
+  # /proc
+  #@{PROC}/sys/kernel/ostype r,
+  #@{PROC}/sys/kernel/osrelease r,
+  @{PROC}/sys/fs/inotify/max_user_watches rm,
+  @{PROC}/ r,
+  @{PROC}/*/net/arp r,
+  @{PROC}/*/setgroups rw,
+  @{PROC}/*/fdinfo/ rw,
+  @{PROC}/[0-9]*/cmdline r,
+  @{PROC}/[0-9]*/fd/ r,
+  @{PROC}/[0-9]*/io r,
+  @{PROC}/[0-9]*/maps r,
+  @{PROC}/[0-9]*/mounts r,
+  @{PROC}/[0-9]*/oom_score_adj w,
+  @{PROC}/[0-9]*/stat r,
+  @{PROC}/[0-9]*/statm r,
+  @{PROC}/[0-9]*/status r,
+  @{PROC}/[0-9]*/task/ r,
+  @{PROC}/[0-9]*/task/[0-9]*/stat r,
+  @{PROC}/[0-9]*/task/[0-9]*/status r,
+  @{PROC}/[0-9]*/uid_map rw,
+  @{PROC}/[0-9]*/gid_map rw,
+  @{PROC}/loadavg r,
+  @{PROC}/*/environ r,
+  @{PROC}/*/net/route r,
+
+
+  #/etc
+  /etc/nsswitch.conf r,
+  /etc/gtk-3.0/settings.ini r,
+
+
+  # /sys
+  /sys/bus/ r,
+  /sys/bus/acpi/devices/ r,
+  /sys/bus/clockevents/devices/ r,
+  /sys/bus/clocksource/devices/ r,
+  /sys/bus/container/devices/ r,
+  /sys/bus/cec/devices/ r,
+  /sys/bus/cpu/devices/ r,
+  /sys/bus/dax/devices/ r,
+  /sys/bus/edac/devices/ r,
+  /sys/bus/event_source/devices/ r,
+  /sys/bus/i2c/devices/ r,
+  /sys/bus/isa/devices/ r,
+  /sys/bus/hid/devices/ r,
+  /sys/bus/machinecheck/devices/ r,
+  /sys/bus/mdio_bus/devices/ r,
+  /sys/bus/mei/devices/ r,
+  /sys/bus/memory/devices/ r,
+  /sys/bus/mipi-dsi/devices/ r,
+  /sys/bus/node/devices/ r,
+  /sys/bus/nvmem/devices/ r,
+  /sys/bus/pci/devices/ r,
+  /sys/bus/pci/devices/*/* r,
+  /sys/bus/xen/devices/ r,
+  /sys/bus/xen-backend/devices/ r,
+  /sys/bus/serio/devices/ r,
+  /sys/bus/hdaudio/devices/ r,
+  /sys/bus/gpio/devices/ r,
+  /sys/bus/pci-epf/devices/ r,
+  /sys/bus/pci_express/devices/ r,
+  /sys/bus/platform/devices/ r,
+  /sys/bus/pnp/devices/ r,
+  /sys/bus/scsi/devices/ r,
+  /sys/bus/soundwire/devices/ r,
+  /sys/bus/thunderbolt/devices/ r,
+  /sys/bus/spi/devices/ r,
+  /sys/bus/usb/devices/ r,
+  /sys/bus/wmi/devices/ r,
+  /sys/bus/workqueue/devices/ r,
+  /sys/bus/virtio/devices/ r,
+  /sys/devices/*/uevent r,
+  /sys/devices/system/cpu/ r,
+  /sys/devices/system/cpu/*/cpufreq/scaling_cur_freq r,
+  /sys/devices/system/cpu/*/cpufreq/scaling_max_freq r,
+  /sys/devices/*/*/*/*/*/* r,
+  /sys/devices/*/*/*/*/* r,
+  /sys/devices/*/*/*/* r,
+  /sys/devices/*/*/* r,
+  /sys/devices/LNXSYSTM:*/**/uevent r,
+  /sys/devices/pci[0-9]*/**/class r,
+  /sys/devices/pci[0-9]*/**/device r,
+  /sys/devices/pci[0-9]*/**/irq r,
+  /sys/devices/pci[0-9]*/**/resource r,
+  /sys/devices/pci[0-9]*/**/vendor r,
+  /sys/devices/pci[0-9]*/**/idProduct r,
+  /sys/devices/pci[0-9]*/**/idVendor r,
+  /sys/devices/system/cpu/ r,
+  /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq r,
+  /sys/devices/system/cpu/cpufreq/policy0/cpuinfo_max_freq r,
+  /sys/class/ r,
+  /sys/class/*/ r,
+
+  # /run
+  /run/udev/data/+drm:* r,
+  /run/udev/data/+pci:* r,
+  /run/udev/data/*:* r,
+
+  # /tmp
+  /tmp/ r,
+  /tmp/* mrw,
+  /tmp/.com.google.Chrome.*/ rw,
+  /tmp/.com.google.Chrome.*/Singleton* w,
+  /tmp/CRX_75DAF8CB7768/ rw,
+  /tmp/CRX_75DAF8CB7768/* rw,
+  /tmp/icedteaplugin-*/ w,
+  /tmp/icedteaplugin-*/[0-9]*-icedteanp-* rw,
+  /tmp/scoped_dir_*/ rw,
+  /tmp/scoped_dir_*/.com.google.Chrome.* rw,
+  /tmp/scoped_dir_*/CRX_INSTALL/ rw,
+  /tmp/scoped_dir_*/CRX_INSTALL/** rw,
+  /tmp/scoped_dir*/DECODED* rw,
+  /tmp/scoped_dir_*/mccea*_[0-9]*.crx rw,
+
+  # /dev
+  /dev/ r,
+  /dev/video* rw,
+  /dev/pts/* rw,
+  /dev/shm/* rw,
+  owner /dev/tty rw,
+
+  ptrace (trace) peer=Chrome_IOThread,
+  ptrace (trace) peer=/opt/google/chrome/chrome,
+  ptrace (read) peer=unconfined,
+
+  # deny rules
+  deny /etc/hosts r,
+  deny /etc/ssl/certs/ca-certificates.crt r,
+  deny /home/data krw,
+  deny /root krw,
+}
