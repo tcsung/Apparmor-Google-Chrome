@@ -255,9 +255,4 @@
   ptrace (trace) peer=/opt/google/chrome/chrome,
   ptrace (read) peer=unconfined,
 
-  # deny rules
-  deny /etc/hosts r,
-  deny /etc/ssl/certs/ca-certificates.crt r,
-  deny /home/data krw,
-  deny /root krw,
 }
